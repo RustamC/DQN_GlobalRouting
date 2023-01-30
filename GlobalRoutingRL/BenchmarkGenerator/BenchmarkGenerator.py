@@ -158,31 +158,53 @@ def connection_statistical(edge_traffic,gridSize,benchmarkNumber):
 
 def parse_arguments():
     parser = argparse.ArgumentParser('Benchmark Generator Parser')
-    parser.add_argument('--benchNumber',type=int,\
-        dest='benchmarkNumber',default=20)
-    parser.add_argument('--gridSize',type=int,dest='gridSize',default=16)
-    parser.add_argument('--netNum',type=int,dest='netNum',default=5)
-    parser.add_argument('--capacity',type=int,dest='cap',default=4)
-    parser.add_argument('--maxPinNum',type=int,dest='maxPinNum',default=5)
-    parser.add_argument('--reducedCapNum',type=int,dest='reducedCapNum',default=0) # EvenNumber
+    parser.add_argument('--benchNumber',type=int, dest='benchmarkNumber', default=20)
+    parser.add_argument('--gridSize',type=int, dest='gridSize', default=8)
+    parser.add_argument('--netNum',type=int, dest='netNum', default=20)
+    parser.add_argument('--capacity',type=int, dest='cap', default=4)
+    parser.add_argument('--maxPinNum',type=int, dest='maxPinNum', default=5)
+    parser.add_argument('--reducedCapNum',type=int, dest='reducedCapNum', default=0) # EvenNumber
     return parser.parse_args()
 
+
 if __name__ == "__main__":
+    ROOT_PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '/'
+
     args = parse_arguments()
     benchmarkNumber = args.benchmarkNumber
 
     os.chdir('..')
-    os.system('rm -r benchmark')
-    os.system('rm -r capacityplot_A*')
-    os.system('rm -r solutionsA*')
-    os.system('rm -r benchmark_reduced')
-    os.system('rm -r capacityplot_A*_reduced')
-    os.system('rm -r solutionsA*_reduced')
 
-    os.chdir('BenchmarkGenerator')
+    try:
+        shutil.rmtree(ROOT_PATH + 'benchmark')
+    except:
+        pass
+    try:
+        shutil.rmtree(ROOT_PATH + 'capacityplot_A')
+    except:
+        pass
+    try:
+        shutil.rmtree(ROOT_PATH + 'solutionsA')
+    except:
+        pass
+    try:
+        shutil.rmtree(ROOT_PATH + 'benchmark_reduced')
+    except:
+        pass
+    try:
+        shutil.rmtree(ROOT_PATH + 'capacityplot_A_reduced')
+    except:
+        pass
+    try:
+        shutil.rmtree(ROOT_PATH + 'solutionsA_reduced')
+    except:
+        pass
+
+    #os.chdir('BenchmarkGenerator')
+    os.chdir('.')
 
     # benchmarkNumber = 20
-    savepath = '../benchmark/'  # specify path to save benchmarks
+    savepath = ROOT_PATH + 'benchmark/'  # specify path to save benchmarks
     os.makedirs(savepath)
     os.chdir(savepath)
      
@@ -192,7 +214,7 @@ if __name__ == "__main__":
 
     for i in range(benchmarkNumber):
         benchmark_name = "test_benchmark_{num}.gr".format(num=i+1)
-        generator(benchmark_name,gridSize,netNum,vCap,hCap,maxPinNum,savepath)
+        generator(benchmark_name, gridSize, netNum, vCap, hCap, maxPinNum, savepath)
     
     
     # Get statistical information about edge traffic by solving benchmarks
@@ -200,13 +222,13 @@ if __name__ == "__main__":
         # initialize edge traffic basket 
         #(data structure: startTile x,y,z and endTile x,y,z )
     
-    edge_traffic =np.empty(shape=(0,6))
+    edge_traffic = np.empty(shape=(0, 6))
        # solving problems with A* search
-    os.chdir("../benchmark/")
+    os.chdir(ROOT_PATH + "benchmark/")
 #    benchmarkfile = "test_benchmark_5.gr"
-    solution_savepath = '../solutionsA*/' 
-    if not os.path.exists('../capacityPlot_A*/'):
-        os.mkdir('../capacityPlot_A*/')
+    solution_savepath = ROOT_PATH + 'solutionsA/'
+    if not os.path.exists(ROOT_PATH + 'capacityPlot_A/'):
+        os.mkdir(ROOT_PATH + 'capacityPlot_A/')
 
     os.mkdir(solution_savepath)
     benEnum = 0
@@ -234,7 +256,7 @@ if __name__ == "__main__":
         plt.plot(vCap*np.ones_like(edge_utilize_plot),'b',label="Capacity before A* route")
         plt.ylabel('Remaining capacity')
         plt.legend()
-        plt.savefig('../capacityPlot_A*/edgePlotwithCapacity{cap}number{ben}.png'.format(cap=vCap,ben=benEnum))
+        plt.savefig(ROOT_PATH + 'capacityPlot_A/edgePlotwithCapacity{cap}number{ben}.png'.format(cap=vCap,ben=benEnum))
 
         # Draw heatmap of individual problems
         via_capacity_individual,hoz_capacity_individual,vet_capacity_individual =\
@@ -242,25 +264,25 @@ if __name__ == "__main__":
         plt.figure()
         plt.imshow(via_capacity_individual,cmap='hot', interpolation='nearest')
         plt.title('Via Capacity Heatmap')
-        if not os.path.exists('../capacityPlot_A*/'):
-            os.mkdir('../capacityPlot_A*/')
+        if not os.path.exists(ROOT_PATH + 'capacityPlot_A/'):
+            os.mkdir(ROOT_PATH + 'capacityPlot_A/')
         plt.colorbar()
         plt.gca().invert_yaxis()
-        plt.savefig('../capacityPlot_A*/viaCapacity_{pro}.png'.format(pro=benchmarkfile))
+        plt.savefig(ROOT_PATH + 'capacityPlot_A/viaCapacity_{pro}.png'.format(pro=benchmarkfile))
         
         plt.figure()
         plt.imshow(vet_capacity_individual,cmap='hot', interpolation='nearest')
         plt.title('Vertical Capacity Heatmap (Layer2)')
         plt.colorbar()
         plt.gca().invert_yaxis()
-        plt.savefig('../capacityPlot_A*/vetCapacity_{pro}.png'.format(pro=benchmarkfile))
+        plt.savefig(ROOT_PATH + 'capacityPlot_A/vetCapacity_{pro}.png'.format(pro=benchmarkfile))
         
         plt.figure()
         plt.imshow(hoz_capacity_individual,cmap='hot', interpolation='nearest')
         plt.title('Horizontal Capacity Heatmap (Layer1)')
         plt.colorbar()
         plt.gca().invert_yaxis()
-        plt.savefig('../capacityPlot_A*/hozCapacity_{pro}.png'.format(pro=benchmarkfile))
+        plt.savefig(ROOT_PATH + 'capacityPlot_A/hozCapacity_{pro}.png'.format(pro=benchmarkfile))
 
     # calculate capacity utilization
     # print("Total num of edge uitilization: ",edge_traffic.shape[0]) # print total num of edge uitilization
@@ -299,25 +321,25 @@ if __name__ == "__main__":
     plt.figure()
     plt.imshow(via_capacity,cmap='hot', interpolation='nearest')
     plt.title('Via Capacity Heatmap')
-    if not os.path.exists('../capacityPlot_A*/'):
-    	os.mkdir('../capacityPlot_A*/')
+    if not os.path.exists(ROOT_PATH + 'capacityPlot_A/'):
+    	os.mkdir(ROOT_PATH + 'capacityPlot_A/')
     plt.colorbar()
     plt.gca().invert_yaxis()
-    plt.savefig('../capacityPlot_A*/viaCapacity.png')
+    plt.savefig(ROOT_PATH + 'capacityPlot_A/viaCapacity.png')
     
     plt.figure()
     plt.imshow(vet_capacity,cmap='hot', interpolation='nearest')
     plt.title('Vertical Capacity Heatmap (Layer2)')
     plt.colorbar()
     plt.gca().invert_yaxis()
-    plt.savefig('../capacityPlot_A*/vetCapacity.png')
+    plt.savefig(ROOT_PATH + 'capacityPlot_A/vetCapacity.png')
     
     plt.figure()
     plt.imshow(hoz_capacity,cmap='hot', interpolation='nearest')
     plt.title('Horizontal Capacity Heatmap (Layer1)')
     plt.colorbar()
     plt.gca().invert_yaxis()
-    plt.savefig('../capacityPlot_A*/hozCapacity.png')
+    plt.savefig(ROOT_PATH + 'capacityPlot_A/hozCapacity.png')
 
     plt.figure()
     # plt.plot(utilization_frequency[:,0],utilization_frequency[:,1])
@@ -325,7 +347,7 @@ if __name__ == "__main__":
     plt.plot(utilization_frequency[:,0],utilization_frequency[:,1],'r-')
 
     plt.title('Edge Utilization Histogram')
-    plt.savefig('../capacityPlot_A*/edgeHist.png')
+    plt.savefig(ROOT_PATH + 'capacityPlot_A/edgeHist.png')
     
 
 
@@ -336,19 +358,19 @@ if __name__ == "__main__":
     # plt.plot(vCap*np.ones_like(edge_utilize_plot),'b',label="Capacity before A* route")
     # plt.ylabel('Remaining capacity')
     # plt.legend()
-    # plt.savefig('../capacityPlot_A*/edgePlotwithCapacity{cap}.png'.format(cap=vCap))
+    # plt.savefig('../capacityPlot_A/edgePlotwithCapacity{cap}.png'.format(cap=vCap))
 
 
 
     #  Deal with benchmark with reduced capacity
     os.chdir('../BenchmarkGenerator/') # Go back to BenchmarkGenerator folder
     
-    savepath = '../benchmark_reduced/'  # specify path to save benchmarks
+    savepath = ROOT_PATH + 'benchmark_reduced/'  # specify path to save benchmarks
     os.makedirs(savepath)
     os.chdir(savepath)
 
-    if not os.path.exists('../capacityPlot_A*_reduced/'):
-        os.mkdir('../capacityPlot_A*_reduced/')
+    if not os.path.exists(ROOT_PATH + 'capacityPlot_A_reduced/'):
+        os.mkdir(ROOT_PATH + 'capacityPlot_A_reduced/')
 
     for i in range(benchmarkNumber):
         benchmark_name = "test_benchmark_{num}.gr".format(num=i+1)
@@ -364,7 +386,7 @@ if __name__ == "__main__":
        # solving problems with A* search
     os.chdir("../benchmark_reduced/")
 #    benchmarkfile = "test_benchmark_5.gr"
-    solution_savepath = '../solutionsA*_reduced/' 
+    solution_savepath = '../solutionsA_reduced/'
     os.mkdir(solution_savepath)
     benEnum = 0
     for benchmarkfile in os.listdir('.'):
@@ -391,7 +413,7 @@ if __name__ == "__main__":
         plt.plot(vCap*np.ones_like(edge_utilize_plot),'b',label="Capacity before A* route")
         plt.ylabel('Remaining capacity')
         plt.legend()
-        plt.savefig('../capacityPlot_A*_reduced/edgePlotwithCapacity{cap}number{ben}.png'.format(cap=vCap,ben=benEnum))
+        plt.savefig('../capacityPlot_A_reduced/edgePlotwithCapacity{cap}number{ben}.png'.format(cap=vCap,ben=benEnum))
 
         # Draw heatmap of individual problem
         via_capacity_individual,hoz_capacity_individual,vet_capacity_individual =\
@@ -402,21 +424,21 @@ if __name__ == "__main__":
         plt.title('Via Capacity Heatmap')
         plt.colorbar()
         plt.gca().invert_yaxis()
-        plt.savefig('../capacityPlot_A*_reduced/viaCapacity_{pro}.png'.format(pro=benchmarkfile))
+        plt.savefig('../capacityPlot_A_reduced/viaCapacity_{pro}.png'.format(pro=benchmarkfile))
         
         plt.figure()
         plt.imshow(vet_capacity_individual,cmap='hot', interpolation='nearest')
         plt.title('Vertical Capacity Heatmap (Layer2)')
         plt.colorbar()
         plt.gca().invert_yaxis()
-        plt.savefig('../capacityPlot_A*_reduced/vetCapacity_{pro}.png'.format(pro=benchmarkfile))
+        plt.savefig('../capacityPlot_A_reduced/vetCapacity_{pro}.png'.format(pro=benchmarkfile))
         
         plt.figure()
         plt.imshow(hoz_capacity_individual,cmap='hot', interpolation='nearest')
         plt.title('Horizontal Capacity Heatmap (Layer1)')
         plt.colorbar()
         plt.gca().invert_yaxis()
-        plt.savefig('../capacityPlot_A*_reduced/hozCapacity_{pro}.png'.format(pro=benchmarkfile))
+        plt.savefig('../capacityPlot_A_reduced/hozCapacity_{pro}.png'.format(pro=benchmarkfile))
 
 
     # calculate capacity utilization
@@ -457,36 +479,31 @@ if __name__ == "__main__":
     plt.title('Via Capacity Heatmap')
     plt.colorbar()
     plt.gca().invert_yaxis()
-    os.mkdir('../capacityPlot_A*_reduced')
-    plt.savefig('../capacityPlot_A*_reduced/viaCapacity.png')
+    # os.mkdir('../capacityPlot_A_reduced')
+    plt.savefig('../capacityPlot_A_reduced/viaCapacity.png')
     
     plt.figure()
     plt.imshow(vet_capacity,cmap='hot', interpolation='nearest')
     plt.title('Vertical Capacity Heatmap (Layer2)')
     plt.colorbar()
     plt.gca().invert_yaxis()
-    plt.savefig('../capacityPlot_A*_reduced/vetCapacity.png')
+    plt.savefig('../capacityPlot_A_reduced/vetCapacity.png')
+    plt.close()
     
     plt.figure()
     plt.imshow(hoz_capacity,cmap='hot', interpolation='nearest')
     plt.title('Horizontal Capacity Heatmap (Layer1)')
     plt.colorbar()
     plt.gca().invert_yaxis()
-    plt.savefig('../capacityPlot_A*_reduced/hozCapacity.png')
+    plt.savefig('../capacityPlot_A_reduced/hozCapacity.png')
+    plt.close()
 
     plt.figure()
     # plt.plot(utilization_frequency[:,0],utilization_frequency[:,1])
     plt.bar(utilization_frequency[:,0],utilization_frequency[:,1])
     plt.plot(utilization_frequency[:,0],utilization_frequency[:,1],'r-')
     plt.title('Edge Utilization Histogram')
-    plt.colorbar()
+    #plt.colorbar()
     plt.gca().invert_yaxis()
-    plt.savefig('../capacityPlot_A*_reduced/edgeHist.png')
-    
-
-
-
-
-
-
-
+    plt.savefig('../capacityPlot_A_reduced/edgeHist.png')
+    plt.close()

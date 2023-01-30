@@ -6,7 +6,7 @@ import math
 import os
 
 np.random.seed(10701)
-tf.set_random_seed(10701)
+tf.compat.v1.set_random_seed(10701)
 random.seed(10701)
 
 class QNetwork():
@@ -26,27 +26,27 @@ class QNetwork():
 
 		kernel_init = tf.random_uniform_initializer(-0.5, 0.5)
 		bias_init = tf.constant_initializer(0)
-		self.input = tf.placeholder(tf.float32, shape=[None, self.nObservation], name='input')
-		with tf.variable_scope(networkname):
-			layer1 = tf.layers.dense(self.input, self.architecture[0], tf.nn.relu, kernel_initializer=kernel_init, bias_initializer=bias_init, name='layer1', trainable=trianable)
-			layer2 = tf.layers.dense(layer1, self.architecture[1], tf.nn.relu, kernel_initializer=kernel_init, bias_initializer=bias_init, name='layer2', trainable=trianable)
-			layer3 = tf.layers.dense(layer2, self.architecture[2], tf.nn.relu, kernel_initializer=kernel_init, bias_initializer=bias_init, name='layer3', trainable=trianable)
-			self.output = tf.layers.dense(layer3, self.nAction, kernel_initializer=kernel_init, bias_initializer=bias_init, name='output', trainable=trianable)
+		self.input = tf.compat.v1.placeholder(tf.float32, shape=[None, self.nObservation], name='input')
+		with tf.compat.v1.variable_scope(networkname):
+			layer1 = tf.compat.v1.layers.dense(self.input, self.architecture[0], tf.nn.relu, kernel_initializer=kernel_init, bias_initializer=bias_init, name='layer1', trainable=trianable)
+			layer2 = tf.compat.v1.layers.dense(layer1, self.architecture[1], tf.nn.relu, kernel_initializer=kernel_init, bias_initializer=bias_init, name='layer2', trainable=trianable)
+			layer3 = tf.compat.v1.layers.dense(layer2, self.architecture[2], tf.nn.relu, kernel_initializer=kernel_init, bias_initializer=bias_init, name='layer3', trainable=trianable)
+			self.output = tf.compat.v1.layers.dense(layer3, self.nAction, kernel_initializer=kernel_init, bias_initializer=bias_init, name='output', trainable=trianable)
 
-		self.targetQ = tf.placeholder(tf.float32, shape=[None, self.nAction], name='target')
+		self.targetQ = tf.compat.v1.placeholder(tf.float32, shape=[None, self.nAction], name='target')
 		if trianable == True:
 			self.loss = tf.losses.mean_squared_error(self.targetQ, self.output)
-			self.opt = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
+			self.opt = tf.compat.v1.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
-		with tf.variable_scope(networkname, reuse=True):
-			self.w1 = tf.get_variable('layer1/kernel')
-			self.b1 = tf.get_variable('layer1/bias')
-			self.w2 = tf.get_variable('layer2/kernel')
-			self.b2 = tf.get_variable('layer2/bias')
-			self.w3 = tf.get_variable('layer3/kernel')
-			self.b3 = tf.get_variable('layer3/bias')
-			self.w4 = tf.get_variable('output/kernel')
-			self.b4 = tf.get_variable('output/bias')
+		with tf.compat.v1.variable_scope(networkname, reuse=True):
+			self.w1 = tf.compat.v1.get_variable('layer1/kernel')
+			self.b1 = tf.compat.v1.get_variable('layer1/bias')
+			self.w2 = tf.compat.v1.get_variable('layer2/kernel')
+			self.b2 = tf.compat.v1.get_variable('layer2/bias')
+			self.w3 = tf.compat.v1.get_variable('layer3/kernel')
+			self.b3 = tf.compat.v1.get_variable('layer3/bias')
+			self.w4 = tf.compat.v1.get_variable('output/kernel')
+			self.b4 = tf.compat.v1.get_variable('output/bias')
 
 
 class Replay_Memory():
@@ -99,7 +99,7 @@ class DQN_Agent():
 		
 		if environment_name == 'grid':
 			self.gamma = 0.95
-		self.max_episodes = 10000 #20000 #200
+		self.max_episodes = 150 #20000 #200
 		self.batch_size = 32
 		self.render = render
 
@@ -109,22 +109,22 @@ class DQN_Agent():
 
 		self.gridgraph = gridgraph
 
-		self.as_w1 = tf.assign(self.tNetwork.w1, self.qNetwork.w1)
-		self.as_b1 = tf.assign(self.tNetwork.b1, self.qNetwork.b1)
-		self.as_w2 = tf.assign(self.tNetwork.w2, self.qNetwork.w2)
-		self.as_b2 = tf.assign(self.tNetwork.b2, self.qNetwork.b2)
-		self.as_w3 = tf.assign(self.tNetwork.w3, self.qNetwork.w3)
-		self.as_b3 = tf.assign(self.tNetwork.b3, self.qNetwork.b3)
-		self.as_w4 = tf.assign(self.tNetwork.w4, self.qNetwork.w4)
-		self.as_b4 = tf.assign(self.tNetwork.b4, self.qNetwork.b4)
+		self.as_w1 = tf.compat.v1.assign(self.tNetwork.w1, self.qNetwork.w1)
+		self.as_b1 = tf.compat.v1.assign(self.tNetwork.b1, self.qNetwork.b1)
+		self.as_w2 = tf.compat.v1.assign(self.tNetwork.w2, self.qNetwork.w2)
+		self.as_b2 = tf.compat.v1.assign(self.tNetwork.b2, self.qNetwork.b2)
+		self.as_w3 = tf.compat.v1.assign(self.tNetwork.w3, self.qNetwork.w3)
+		self.as_b3 = tf.compat.v1.assign(self.tNetwork.b3, self.qNetwork.b3)
+		self.as_w4 = tf.compat.v1.assign(self.tNetwork.w4, self.qNetwork.w4)
+		self.as_b4 = tf.compat.v1.assign(self.tNetwork.b4, self.qNetwork.b4)
 
 
-		self.init = tf.global_variables_initializer()
+		self.init = tf.compat.v1.global_variables_initializer()
 
 		self.sess = sess
 		# tf.summary.FileWriter("logs/", self.sess.graph)
 		self.sess.run(self.init)
-		self.saver = tf.train.Saver(max_to_keep=20)
+		self.saver = tf.compat.v1.train.Saver(max_to_keep=20)
 
 	def epsilon_greedy_policy(self, q_values):
 		# Creating epsilon greedy probabilities to sample from.
@@ -273,7 +273,7 @@ class DQN_Agent():
 		# 		 reward_log=reward_log, train_episode=train_episode)
 
 		self.sess.close()
-		tf.reset_default_graph()
+		tf.compat.v1.reset_default_graph()
 
 		return solutionDRL,reward_plot_combo,reward_plot_combo_pure,solution,self.gridgraph.posTwoPinNum
 
