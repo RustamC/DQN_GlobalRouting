@@ -18,6 +18,7 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
 import random
+import shutil
 
 np.random.seed(10701)
 tf.set_random_seed(10701)
@@ -746,7 +747,12 @@ def DRLagent_generator(filename):
     return agent,episodes,model_path,data_path,environment_name
 
 if __name__ == "__main__":
+    if os.path.exists('solutionsDRL'):
+        shutil.rmtree('solutionsDRL')
+
     os.makedirs('solutionsDRL')
+    os.chmod('solutionsDRL', mode=0o777)
+
     reduced_path = 'benchmark_reduced'
     if not os.path.exists(reduced_path):
         os.makedirs(reduced_path)

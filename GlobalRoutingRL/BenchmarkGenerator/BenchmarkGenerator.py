@@ -180,7 +180,7 @@ if __name__ == "__main__":
     except:
         pass
     try:
-        shutil.rmtree(ROOT_PATH + 'capacityplot_A')
+        shutil.rmtree(ROOT_PATH + 'capacityPlot_A')
     except:
         pass
     try:
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     except:
         pass
     try:
-        shutil.rmtree(ROOT_PATH + 'capacityplot_A_reduced')
+        shutil.rmtree(ROOT_PATH + 'capacityPlot_A_reduced')
     except:
         pass
     try:
@@ -507,3 +507,28 @@ if __name__ == "__main__":
     plt.gca().invert_yaxis()
     plt.savefig('../capacityPlot_A_reduced/edgeHist.png')
     plt.close()
+
+    try:
+        os.chmod(ROOT_PATH + 'benchmark', mode=0o777)
+    except:
+        pass
+    try:
+        os.chmod(ROOT_PATH + 'capacityPlot_A', mode=0o777)
+    except:
+        pass
+    try:
+        os.chmod(ROOT_PATH + 'solutionsA', mode=0o777)
+    except:
+        pass
+    try:
+        os.chmod(ROOT_PATH + 'benchmark_reduced', mode=0o777)
+    except:
+        pass
+    try:
+        os.chmod(ROOT_PATH + 'capacityPlot_A_reduced', mode=0o777)
+    except:
+        pass
+    try:
+        os.chmod(ROOT_PATH + 'solutionsA_reduced', mode=0o777)
+    except:
+        pass
