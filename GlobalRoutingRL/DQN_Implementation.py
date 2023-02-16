@@ -99,7 +99,7 @@ class DQN_Agent():
 		
 		if environment_name == 'grid':
 			self.gamma = 0.95
-		self.max_episodes = 150 #20000 #200
+		self.max_episodes = 2000 #20000 #200
 		self.batch_size = 32
 		self.render = render
 
